@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    volumes:
+      - ./:/opt/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - simple_wagtail
+    environment:
+      - DJANGO_SETTINGS_MODULE=simple_wagtail.settings.dev
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=simple_wagtail
+      - DB_USER=simple_wagtail
+      - DB_PASSWORD=simple_wagtail
+      - DB_HOST=db
+      - DB_PORT=3306
+
+  db:
+    image: mysql/mysql-server:8.0
+    restart: unless-stopped
+    container_name: db
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - simple_wagtail
+    environment:
+      - MYSQL_ROOT_PASSWORD=simple_root_pass
+      - MYSQL_DATABASE=simple_wagtail
+      - MYSQL_USER=simple_wagtail
+      - MYSQL_PASSWORD=simple_wagtail
+
+networks:
+  simple_wagtail:
+
+volumes:
+  database:
+
